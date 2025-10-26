@@ -1,0 +1,29 @@
+# Example Terraform variables file
+# Copy this file to terraform.tfvars and customize with your values
+
+# Required: Your SSH key pair name (must exist in AWS EC2)
+key_name = "grand-archive-key"
+
+# AWS Region
+aws_region = "us-east-1"
+
+# EC2 Instance Configuration
+instance_type     = "t4g.small"  # ARM64 instance
+root_volume_size  = 20           # GB
+
+# Domain Configuration
+domain_name           = "grandarchivemeta.com"
+domain_name_secondary = "grandarchivemeta.net"
+vercel_cname_target   = "cname.vercel-dns.com"
+
+# API Configuration
+api_port = 8080
+
+# Security Configuration
+# WARNING: Restrict this to your IP address in production!
+# Get your IP: curl ifconfig.me
+ssh_allowed_cidr = ["0.0.0.0/0"]  # Change to ["YOUR_IP/32"]
+
+# Environment
+environment  = "prod"
+project_name = "grand-archive-meta"

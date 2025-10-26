@@ -1,0 +1,246 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+env:
+  RUST_VERSION: '1.75'
+  TARGET: aarch64-unknown-linux-gnu
+  BINARY_NAME: grand-archive-api
+  DEPLOY_PATH: /usr/local/bin/grand-archive-api
+  SERVICE_NAME: grand-archive-api
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Build ARM64 Binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          targets: ${{ env.TARGET }}
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-git-
+
+      - name: Cache cargo build
+        uses: actions/cache@v3
+        with:
+          path: backend/target
+          key: ${{ runner.os }}-cargo-build-${{ env.TARGET }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-${{ env.TARGET }}-
+
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build release binary
+        working-directory: ./backend
+        env:
+          AWS_LC_SYS_NO_ASM: 1
+        run: cross build --release --target ${{ env.TARGET }}
+
+      - name: Verify binary
+        run: |
+          ls -lh backend/target/${{ env.TARGET }}/release/
+          file backend/target/${{ env.TARGET }}/release/${{ env.BINARY_NAME }}
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ env.TARGET }}
+          path: backend/target/${{ env.TARGET }}/release/${{ env.BINARY_NAME }}
+          retention-days: 7
+
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download binary artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ env.TARGET }}
+          path: ./artifacts
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create systemd service file
+        run: |
+          cat > grand-archive-api.service << 'EOF'
+          [Unit]
+          Description=Grand Archive Meta API
+          After=network.target
+          StartLimitIntervalSec=0
+
+          [Service]
+          Type=simple
+          Restart=always
+          RestartSec=10
+          User=ubuntu
+          WorkingDirectory=/home/ubuntu
+          Environment="MONGODB_URI=${{ secrets.MONGODB_URI }}"
+          Environment="RUST_LOG=info"
+          Environment="ENVIRONMENT=production"
+          Environment="PORT=8080"
+          ExecStart=/usr/local/bin/grand-archive-api
+
+          # Security hardening
+          NoNewPrivileges=true
+          PrivateTmp=true
+          ProtectSystem=strict
+          ProtectHome=true
+          ReadWritePaths=/var/log
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+      - name: Deploy to EC2
+        run: |
+          # Make binary executable
+          chmod +x artifacts/${{ env.BINARY_NAME }}
+
+          # Stop service before updating
+          ssh -i ~/.ssh/ec2_key ubuntu@${{ secrets.EC2_HOST }} \
+            'sudo systemctl stop ${{ env.SERVICE_NAME }} || true'
+
+          # Copy binary to EC2
+          scp -i ~/.ssh/ec2_key artifacts/${{ env.BINARY_NAME }} \
+            ubuntu@${{ secrets.EC2_HOST }}:/tmp/${{ env.BINARY_NAME }}
+
+          # Copy systemd service file
+          scp -i ~/.ssh/ec2_key grand-archive-api.service \
+            ubuntu@${{ secrets.EC2_HOST }}:/tmp/grand-archive-api.service
+
+          # Move files and restart service
+          ssh -i ~/.ssh/ec2_key ubuntu@${{ secrets.EC2_HOST }} << 'ENDSSH'
+            # Move binary to final location
+            sudo mv /tmp/${{ env.BINARY_NAME }} ${{ env.DEPLOY_PATH }}
+            sudo chmod +x ${{ env.DEPLOY_PATH }}
+            sudo chown root:root ${{ env.DEPLOY_PATH }}
+
+            # Install systemd service
+            sudo mv /tmp/grand-archive-api.service /etc/systemd/system/
+            sudo chmod 644 /etc/systemd/system/grand-archive-api.service
+
+            # Reload systemd and start service
+            sudo systemctl daemon-reload
+            sudo systemctl enable ${{ env.SERVICE_NAME }}
+            sudo systemctl start ${{ env.SERVICE_NAME }}
+
+            # Wait for service to stabilize
+            sleep 5
+          ENDSSH
+
+      - name: Verify deployment
+        run: |
+          ssh -i ~/.ssh/ec2_key ubuntu@${{ secrets.EC2_HOST }} << 'ENDSSH'
+            # Check service status
+            echo "=== Service Status ==="
+            sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager
+
+            # Check if service is active
+            if ! sudo systemctl is-active --quiet ${{ env.SERVICE_NAME }}; then
+              echo "ERROR: Service is not running!"
+              sudo journalctl -u ${{ env.SERVICE_NAME }} -n 50 --no-pager
+              exit 1
+            fi
+
+            # Check if port is listening
+            echo -e "\n=== Port Check ==="
+            if ! sudo netstat -tlnp | grep :8080; then
+              echo "ERROR: Port 8080 is not listening!"
+              exit 1
+            fi
+
+            # Wait a moment for service to fully initialize
+            sleep 3
+
+            # Health check
+            echo -e "\n=== Health Check ==="
+            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health || echo "failed")
+            if [ "$response" != "200" ]; then
+              echo "ERROR: Health check failed with response: $response"
+              sudo journalctl -u ${{ env.SERVICE_NAME }} -n 50 --no-pager
+              exit 1
+            fi
+
+            echo "✓ Service is healthy and responding"
+          ENDSSH
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f ~/.ssh/ec2_key
+
+      - name: Deployment summary
+        run: |
+          echo "### Deployment Successful ✓" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Service**: ${{ env.SERVICE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Binary**: ${{ env.DEPLOY_PATH }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target**: ${{ env.TARGET }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployed by**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+
+    steps:
+      - name: Check deployment status
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "Deployment completed successfully"
+          else
+            echo "Deployment failed or was cancelled"
+            exit 1
+          fi

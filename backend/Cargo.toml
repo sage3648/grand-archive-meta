@@ -1,0 +1,51 @@
+[package]
+name = "grand-archive-meta"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web framework
+actix-web = "4.9"
+actix-cors = "0.7"
+actix-rt = "2.10"
+
+# Database
+mongodb = "2.8.2"
+bson = { version = "2.13", features = ["chrono-0_4"] }
+
+# Async runtime
+tokio = { version = "1.40", features = ["full"] }
+tokio-cron-scheduler = "0.10"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Configuration
+dotenv = "0.15"
+
+# Date/Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Utilities
+lazy_static = "1.5"
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# Async utilities
+futures = "0.3"
+
+[dev-dependencies]
+mockito = "1.5"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

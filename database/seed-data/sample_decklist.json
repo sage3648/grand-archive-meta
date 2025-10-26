@@ -1,0 +1,269 @@
+{
+  "eventId": "ga-regional-2024-001",
+  "playerId": "player-12345",
+  "playerName": "John Doe",
+  "championSlug": "silvie",
+  "championName": "Silvie",
+  "placement": 1,
+  "mainDeck": [
+    {
+      "cardId": "ga-card-001",
+      "cardName": "Swift Strike",
+      "quantity": 4,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 2,
+      "rarity": "Rare"
+    },
+    {
+      "cardId": "ga-card-002",
+      "cardName": "Wind Spirit",
+      "quantity": 3,
+      "cardType": "Ally",
+      "element": "Wind",
+      "cost": 3,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-003",
+      "cardName": "Gale Burst",
+      "quantity": 4,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 1,
+      "rarity": "Uncommon"
+    },
+    {
+      "cardId": "ga-card-004",
+      "cardName": "Zephyr Ally",
+      "quantity": 4,
+      "cardType": "Ally",
+      "element": "Wind",
+      "cost": 2,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-005",
+      "cardName": "Tempest",
+      "quantity": 2,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 5,
+      "rarity": "Super Rare"
+    },
+    {
+      "cardId": "ga-card-006",
+      "cardName": "Whirlwind Defense",
+      "quantity": 3,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 1,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-007",
+      "cardName": "Aerial Maneuver",
+      "quantity": 4,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 0,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-008",
+      "cardName": "Storm Caller",
+      "quantity": 3,
+      "cardType": "Ally",
+      "element": "Wind",
+      "cost": 4,
+      "rarity": "Rare"
+    },
+    {
+      "cardId": "ga-card-009",
+      "cardName": "Tailwind",
+      "quantity": 4,
+      "cardType": "Item",
+      "element": "Wind",
+      "cost": 1,
+      "rarity": "Uncommon"
+    },
+    {
+      "cardId": "ga-card-010",
+      "cardName": "Cyclone Strike",
+      "quantity": 3,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 3,
+      "rarity": "Rare"
+    },
+    {
+      "cardId": "ga-card-011",
+      "cardName": "Wind Familiar",
+      "quantity": 4,
+      "cardType": "Ally",
+      "element": "Wind",
+      "cost": 1,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-012",
+      "cardName": "Gust",
+      "quantity": 4,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 0,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-013",
+      "cardName": "Breeze Rider",
+      "quantity": 3,
+      "cardType": "Ally",
+      "element": "Wind",
+      "cost": 2,
+      "rarity": "Uncommon"
+    },
+    {
+      "cardId": "ga-card-014",
+      "cardName": "Updraft",
+      "quantity": 3,
+      "cardType": "Item",
+      "element": "Wind",
+      "cost": 2,
+      "rarity": "Uncommon"
+    },
+    {
+      "cardId": "ga-card-015",
+      "cardName": "Air Superiority",
+      "quantity": 2,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 4,
+      "rarity": "Rare"
+    },
+    {
+      "cardId": "ga-card-016",
+      "cardName": "Generic Regalia",
+      "quantity": 4,
+      "cardType": "Regalia",
+      "element": "Norm",
+      "cost": 0,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-017",
+      "cardName": "Generic Draw",
+      "quantity": 4,
+      "cardType": "Action",
+      "element": "Norm",
+      "cost": 2,
+      "rarity": "Common"
+    },
+    {
+      "cardId": "ga-card-018",
+      "cardName": "Generic Removal",
+      "quantity": 2,
+      "cardType": "Action",
+      "element": "Norm",
+      "cost": 3,
+      "rarity": "Uncommon"
+    }
+  ],
+  "sideboard": [
+    {
+      "cardId": "ga-card-019",
+      "cardName": "Hurricane",
+      "quantity": 2,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 6,
+      "rarity": "Super Rare"
+    },
+    {
+      "cardId": "ga-card-020",
+      "cardName": "Calm Before Storm",
+      "quantity": 2,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 2,
+      "rarity": "Uncommon"
+    },
+    {
+      "cardId": "ga-card-021",
+      "cardName": "Anti-Fire Tech",
+      "quantity": 3,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 1,
+      "rarity": "Uncommon"
+    },
+    {
+      "cardId": "ga-card-022",
+      "cardName": "Anti-Water Tech",
+      "quantity": 3,
+      "cardType": "Action",
+      "element": "Wind",
+      "cost": 1,
+      "rarity": "Uncommon"
+    },
+    {
+      "cardId": "ga-card-023",
+      "cardName": "Board Wipe",
+      "quantity": 2,
+      "cardType": "Action",
+      "element": "Norm",
+      "cost": 5,
+      "rarity": "Rare"
+    },
+    {
+      "cardId": "ga-card-024",
+      "cardName": "Graveyard Hate",
+      "quantity": 3,
+      "cardType": "Item",
+      "element": "Norm",
+      "cost": 2,
+      "rarity": "Uncommon"
+    }
+  ],
+  "materialDeck": [
+    {
+      "cardId": "ga-mat-wind",
+      "cardName": "Wind Material",
+      "quantity": 28,
+      "element": "Wind"
+    },
+    {
+      "cardId": "ga-mat-norm",
+      "cardName": "Normal Material",
+      "quantity": 2,
+      "element": "Norm"
+    }
+  ],
+  "deckStats": {
+    "totalCards": 60,
+    "avgMemoryCost": 2.15,
+    "elementDistribution": {
+      "Wind": 50,
+      "Norm": 10
+    },
+    "typeDistribution": {
+      "Ally": 17,
+      "Action": 32,
+      "Item": 7,
+      "Regalia": 4
+    },
+    "rarityDistribution": {
+      "Common": 30,
+      "Uncommon": 15,
+      "Rare": 12,
+      "Super Rare": 3
+    }
+  },
+  "deckHash": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+  "archetype": "Tempo Silvie",
+  "notes": "Focused on early aggression with card draw engine. Strong against slower decks, weak to heavy board control.",
+  "verified": true,
+  "sourceUrl": "https://example.com/decklists/regional-2024-001-winner",
+  "createdAt": { "$date": "2024-02-10T19:00:00.000Z" },
+  "updatedAt": { "$date": "2024-02-10T19:00:00.000Z" }
+}

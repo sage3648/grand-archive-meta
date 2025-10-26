@@ -1,0 +1,78 @@
+{
+  "cardId": "ga-card-001",
+  "cardName": "Swift Strike",
+  "cardType": "Action",
+  "element": "Wind",
+  "cost": 2,
+  "rarity": "Rare",
+  "overallStats": {
+    "totalInclusions": 156,
+    "totalCopies": 624,
+    "avgCopiesPerDeck": 4.0,
+    "uniqueDecks": 156,
+    "winRate": 0.582,
+    "topCutInclusions": 42,
+    "topCutWinRate": 0.641
+  },
+  "byChampion": [
+    {
+      "championSlug": "silvie",
+      "championName": "Silvie",
+      "inclusions": 145,
+      "avgCopies": 4.0,
+      "winRate": 0.589,
+      "topCutInclusions": 40
+    },
+    {
+      "championSlug": "tristan",
+      "championName": "Tristan",
+      "inclusions": 11,
+      "avgCopies": 3.5,
+      "winRate": 0.510,
+      "topCutInclusions": 2
+    }
+  ],
+  "byFormat": [
+    {
+      "format": "Constructed",
+      "inclusions": 156,
+      "avgCopies": 4.0,
+      "winRate": 0.582
+    }
+  ],
+  "recentTrends": {
+    "last30Days": {
+      "inclusions": 45,
+      "winRate": 0.593,
+      "trend": "rising"
+    },
+    "last90Days": {
+      "inclusions": 156,
+      "winRate": 0.582,
+      "trend": "stable"
+    }
+  },
+  "synergyCards": [
+    {
+      "cardId": "ga-card-002",
+      "cardName": "Wind Spirit",
+      "coInclusionRate": 0.92,
+      "winRateTogether": 0.601
+    },
+    {
+      "cardId": "ga-card-008",
+      "cardName": "Storm Caller",
+      "coInclusionRate": 0.85,
+      "winRateTogether": 0.595
+    },
+    {
+      "cardId": "ga-card-010",
+      "cardName": "Cyclone Strike",
+      "coInclusionRate": 0.78,
+      "winRateTogether": 0.588
+    }
+  ],
+  "lastCalculated": { "$date": "2024-02-11T00:00:00.000Z" },
+  "createdAt": { "$date": "2024-01-15T10:30:00.000Z" },
+  "updatedAt": { "$date": "2024-02-11T00:00:00.000Z" }
+}

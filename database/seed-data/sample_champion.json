@@ -1,0 +1,10 @@
+{
+  "uuid": "ga-silvie-001",
+  "slug": "silvie",
+  "name": "Silvie",
+  "element": "Wind",
+  "cardType": "Champion",
+  "imageUrl": "https://example.com/cards/silvie.jpg",
+  "createdAt": { "$date": "2024-01-15T10:30:00.000Z" },
+  "updatedAt": { "$date": "2024-01-15T10:30:00.000Z" }
+}

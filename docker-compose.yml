@@ -1,0 +1,144 @@
+# Grand Archive Meta - Docker Compose Configuration
+# For local development environment
+
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: grand-archive-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: grand-archive
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - grand-archive-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # MongoDB Express (Web UI for MongoDB)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: grand-archive-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    depends_on:
+      - mongodb
+    networks:
+      - grand-archive-network
+
+  # Backend API (Optional - can run locally instead)
+  # Uncomment to run backend in Docker
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: grand-archive-backend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     MONGODB_CONNECTION_STRING: mongodb://admin:password@mongodb:27017/grand-archive?authSource=admin
+  #     MICRONAUT_ENVIRONMENTS: local
+  #     LOG_LEVEL: INFO
+  #   depends_on:
+  #     mongodb:
+  #       condition: service_healthy
+  #   networks:
+  #     - grand-archive-network
+  #   volumes:
+  #     - ./backend:/app
+  #   command: ./gradlew run
+
+  # Frontend (Optional - can run locally instead)
+  # Uncomment to run frontend in Docker
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.dev
+  #   container_name: grand-archive-frontend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     NEXT_PUBLIC_API_URL: http://localhost:8080/api
+  #     NEXT_PUBLIC_SITE_URL: http://localhost:3000
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - grand-archive-network
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #     - /app/.next
+  #   command: npm run dev
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+networks:
+  grand-archive-network:
+    driver: bridge
+
+# ==============================================
+# Usage Instructions
+# ==============================================
+#
+# Start all services:
+#   docker-compose up -d
+#
+# View logs:
+#   docker-compose logs -f
+#
+# Stop all services:
+#   docker-compose down
+#
+# Stop and remove volumes (WARNING: deletes data):
+#   docker-compose down -v
+#
+# Start only MongoDB:
+#   docker-compose up -d mongodb
+#
+# Access MongoDB Express:
+#   http://localhost:8081
+#   Username: admin
+#   Password: admin
+#
+# Connect to MongoDB from host:
+#   mongodb://admin:password@localhost:27017/grand-archive?authSource=admin
+#
+# Connect to MongoDB shell:
+#   docker exec -it grand-archive-mongodb mongosh -u admin -p password
+#
+# ==============================================
+# Notes
+# ==============================================
+#
+# 1. MongoDB data is persisted in a Docker volume
+# 2. Backend and frontend are commented out by default
+#    Run them locally for better development experience
+# 3. Mongo Express provides a web UI at http://localhost:8081
+# 4. All services are on the same network for communication
+#

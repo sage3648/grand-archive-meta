@@ -1,0 +1,82 @@
+name: Frontend Notes
+
+# This file is for documentation purposes only.
+# Vercel automatically deploys the frontend when you push to GitHub.
+#
+# To set up Vercel auto-deployment:
+# 1. Go to https://vercel.com/new
+# 2. Import your GitHub repository
+# 3. Select the frontend directory as the root
+# 4. Configure environment variables in Vercel dashboard:
+#    - NEXT_PUBLIC_API_URL (your backend API URL)
+#    - Any other frontend-specific variables
+# 5. Vercel will automatically deploy on:
+#    - Every push to main (production)
+#    - Every pull request (preview deployments)
+#
+# Vercel deployment features:
+# - Automatic deployments on push
+# - Preview deployments for pull requests
+# - Automatic HTTPS
+# - CDN distribution
+# - Edge functions
+# - Analytics and monitoring
+#
+# If you need a custom workflow for testing before Vercel deploys,
+# uncomment and customize the workflow below:
+
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - 'frontend/**'
+#   pull_request:
+#     branches:
+#       - main
+#     paths:
+#       - 'frontend/**'
+
+# jobs:
+#   test:
+#     name: Frontend Tests
+#     runs-on: ubuntu-latest
+#
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+#
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'npm'
+#           cache-dependency-path: frontend/package-lock.json
+#
+#       - name: Install dependencies
+#         working-directory: ./frontend
+#         run: npm ci
+#
+#       - name: Run linter
+#         working-directory: ./frontend
+#         run: npm run lint
+#
+#       - name: Run type check
+#         working-directory: ./frontend
+#         run: npm run type-check
+#
+#       - name: Run tests
+#         working-directory: ./frontend
+#         run: npm test -- --coverage
+#
+#       - name: Build
+#         working-directory: ./frontend
+#         run: npm run build
+#         env:
+#           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+#
+#       - name: Upload coverage
+#         uses: codecov/codecov-action@v3
+#         with:
+#           files: ./frontend/coverage/lcov.info
+#           flags: frontend
